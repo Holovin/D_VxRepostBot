@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from configs.config import Config
-from helpers.network import Network
+from network.network import Network
 
 
 def logger_setup():

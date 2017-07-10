@@ -1,4 +1,3 @@
-# r001
 import requests
 import logging
 
