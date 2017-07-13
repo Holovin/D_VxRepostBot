@@ -7,9 +7,9 @@ class Network:
     logger = logging.getLogger(logger_name)
     logger.addHandler(logging.NullHandler())
 
-    def __init__(self, headers=''):
-        if headers == '':
-            self.logger.warning("Empty header parameter")
+    def __init__(self, headers=None):
+        if headers is None:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 5.1; rv:2.0b7) Gecko/20100101 Firefox/4.0b7'}
 
         self.headers = headers
         self.last_answer = None
