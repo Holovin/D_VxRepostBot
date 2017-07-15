@@ -1,7 +1,14 @@
 import sys
 
+from storage.userModel import User
+from storage.subModel import Sub
+from storage.storage import Storage
+
 
 def main():
+    db = Storage.get()
+    db.connect()
+
     print('VxRepostBot service helper...')
 
     command = None
@@ -14,13 +21,16 @@ def main():
 
     print('Search [{}] command...'.format(command))
 
-    # do smthng
-    if command == 'db_create':
-        # TODO:
+    # refresh db
+    if command == 'db':
+        db.create_tables([User, Sub], True)
+        print('Renew tables ok')
         return
 
     # not found
     print('Command not found, service do nothing')
+
+    db.disconnect()
     return
 
 if __name__ == '__main__':

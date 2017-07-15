@@ -3,7 +3,7 @@ from logging.handlers import RotatingFileHandler
 from config.config import Config
 
 
-def logger_setup(loggers=None):
+def logger_setup(log_file, loggers=None):
     mode = Config.get('APP_WORK_MODE')
 
     if mode == 'dev':
@@ -13,7 +13,7 @@ def logger_setup(loggers=None):
 
     log_formatter = logging.Formatter(Config.get('APP_LOG_FORMAT'), datefmt='%Y/%m/%d %H:%M:%S')
 
-    handler = RotatingFileHandler(Config.get('APP_LOG_FILE'), maxBytes=10000000, backupCount=5)
+    handler = RotatingFileHandler(log_file, maxBytes=10000000, backupCount=5)
     handler.setLevel(log_level)
     handler.setFormatter(log_formatter)
 
