@@ -2,6 +2,9 @@
 
 #### v0.0.1:
 
+##### 21/07/2017
+- logger root update
+
 ##### 14/07/2017 + 15/07/2017
 - service.py updated
 - main.py for run both apps

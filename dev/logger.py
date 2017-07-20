@@ -13,6 +13,10 @@ def logger_setup(log_file, loggers=None):
 
     log_formatter = logging.Formatter(Config.get('APP_LOG_FORMAT'), datefmt='%Y/%m/%d %H:%M:%S')
 
+    root = logging.getLogger()
+    root.setLevel(log_level)
+    root.addHandler(logging.NullHandler())
+
     handler = RotatingFileHandler(log_file, maxBytes=10000000, backupCount=5)
     handler.setLevel(log_level)
     handler.setFormatter(log_formatter)
