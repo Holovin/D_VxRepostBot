@@ -1,13 +1,8 @@
-from subprocess import Popen, TimeoutExpired
-
 import sys
+from subprocess import Popen, TimeoutExpired
 from time import sleep
 
-from config.config import Config
-from dev.logger import logger_setup
-from network.network import Network
-from storage import userModel, subModel
-from storage.storage import Storage
+from helpers.config import Config
 
 
 def main():
