@@ -1,44 +1,82 @@
+# logger.py
+# App logger
+# r2
+
 import logging
 from logging.handlers import RotatingFileHandler
 
-from helpers.config import Config
 
+class DDLogger:
+    logger_name = 'ddlogger'
+    logger = logging.getLogger(logger_name)
 
-def logger_setup(log_file, loggers=None, touch_root=False):
-    log_formatter = logging.Formatter(Config.get('APP_LOG_FORMAT'), datefmt='%Y/%m/%d %H:%M:%S')
+    @staticmethod
+    def __init__(log_file, loggers_list=None, touch_root=True, log_level=logging.INFO, write_to_console=False,
+                 formatter='%(module)-16s %(levelname)-8s [%(asctime)s] %(message)s', datefmt='%Y/%m/%d %H:%M:%S',
+                 backup_count=1, logger_propagate=False, global_logger_name='ddlogger'):
+        DDLogger.logger_name = global_logger_name
+        DDLogger.logger = logging.getLogger(global_logger_name)
 
-    mode = Config.get('APP_WORK_MODE')
-    full_debug = Config.get('APP_CAN_OUTPUT')
+        log_formatter = logging.Formatter(formatter, datefmt=datefmt)
 
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    console.setFormatter(log_formatter)
-
-    if mode == 'dev':
-        log_level = logging.DEBUG
-    else:
-        log_level = logging.INFO
-
-    if touch_root:
         root = logging.getLogger()
-        root.setLevel(log_level)
-        root.addHandler(logging.NullHandler())
 
-        if full_debug == 'True':
-            root.addHandler(console)
+        if touch_root:
+            root.setLevel(log_level)
+            root.addHandler(logging.NullHandler())
 
-    handler = RotatingFileHandler(log_file, backupCount=1, encoding='utf8')
-    handler.setLevel(log_level)
-    handler.setFormatter(log_formatter)
-    handler.doRollover()
+            if write_to_console:
+                console = logging.StreamHandler()
+                console.setLevel(log_level)
+                console.setFormatter(log_formatter)
 
-    if loggers is None:
-        loggers = []
+                root.addHandler(console)
+                root.info('Console output enabled')
+        else:
+            if write_to_console:
+                print('[WARN] Cant write to console without touch_root=True')
 
-    for logger_name in loggers:
-        logger = logging.getLogger(logger_name)
-        logger.addHandler(handler)
-        logger.propagate = False
+        handler = RotatingFileHandler(log_file, backupCount=backup_count, encoding='utf8')
+        handler.setLevel(log_level)
+        handler.setFormatter(log_formatter)
+        handler.doRollover()
 
-        if full_debug == 'True':
-            logger.addHandler(console)
+        if loggers_list:
+            for logger_name in loggers_list:
+                logger = logging.getLogger(logger_name)
+                logger.setLevel(log_level)
+                logger.addHandler(handler)
+                logger.propagate = logger_propagate
+
+                if touch_root and console and write_to_console:
+                    logger.addHandler(console)
+        else:
+            print('[WARN] Cant write to console without touch_root=True')
+
+    @staticmethod
+    def critical(message):
+        DDLogger.__write(logging.CRITICAL, message)
+
+    @staticmethod
+    def fatal(message):
+        DDLogger.__write(logging.FATAL, message)
+
+    @staticmethod
+    def error(message):
+        DDLogger.__write(logging.ERROR, message)
+
+    @staticmethod
+    def warning(message):
+        DDLogger.__write(logging.WARNING, message)
+
+    @staticmethod
+    def info(message):
+        DDLogger.__write(logging.INFO, message)
+
+    @staticmethod
+    def debug(message):
+        DDLogger.__write(logging.DEBUG, message)
+
+    @staticmethod
+    def __write(level, message):
+        DDLogger.logger.log(level, '{}'.format(message))
